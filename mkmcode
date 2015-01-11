@@ -1,0 +1,153 @@
+#!/usr/bin/ruby
+#-------------------------------------------------------------------------
+#  MicroCode source generator for "HD63701 Compatible Processor Core"
+#-------------------------------------------------------------------------
+def deepcopy(obj)
+	Marshal.load(Marshal.dump(obj))
+end
+
+def line_split(text)
+
+	if (text == nil) then return nil end
+
+	t = text.split(nil)
+	s = Array.new
+	for n in 0..(t.length-1) do
+		cs = t[n].split(//)
+		if (cs[0]=="\"") then
+			s[n] = text.slice(/\".+\"/)
+			break
+		else
+			s[n] = t[n]
+		end
+	end
+	return s
+end
+
+def parser(inname)
+
+	$parsed = Array.new
+
+	nowop   = -1;
+	rawout  = 0;
+
+	open(inname){|infile|
+		while !infile.eof? do
+			rtext = infile.gets
+			text  = rtext.strip
+			chrs  = text.split(//)
+
+			if (chrs[0] == "%") then
+				rawout = rawout^1
+				next
+			end
+			if (rawout != 0) then
+				print rtext
+				next
+			end
+
+			if (chrs[0] == "#") then next end
+
+			words = line_split(text)
+			if (chrs[0] == "$") then
+				nowop = (chrs[1]+chrs[2]).hex
+				$parsed[nowop] = Array.new
+				$parsed[nowop][0] = words
+			else
+				if (words.length > 0) then $parsed[nowop] << words end
+			end
+		end
+	}
+end
+
+def get_maxstage
+
+	n = 0;
+	$parsed.each{|opc|
+		if (opc == nil) then next end
+		if (n < opc.length) then n = opc.length end
+	}
+	return n-1
+end
+
+
+def out_stage_header(stage)
+
+	printf("\nfunction `mcwidth MCODE_S%d;\n", stage-1);
+	printf("input [7:0] opc;\n");
+	printf("begin\n")
+	printf("\tcase (opc)\n");
+end
+
+def out_stage_mc_sub(stage,opcode,nemonic,mcode)
+
+	if (mcode == nil) then return 0 end
+
+	printf("\t\t8'h%s: MCODE_S%d = ", opcode[1,2], stage-1)
+	if ((mcode[0].split(//))[0] == "\"") then
+		raw = (mcode[0])[1..((mcode[0]).length-2)]
+		if ( raw.length > 16 ) then
+			printf("%s;\t\t// %s\n", raw, nemonic);
+		else
+			printf("%s;\t\t\t\t\t\t\t\t\t\t\t\t\t// %s\n", raw, nemonic);
+		end
+	else
+		mrs = mcode[1].split(//)
+		printf("{\`mc%s,\`mcr%s,\`mcr%s,\`mcr%s,\`mcp%s,\`am%s,\`pc%s};\t\t// %s\n",
+			mcode[0], mrs[0], mrs[1], mrs[2], mcode[2], mcode[3], mcode[4], nemonic)
+	end
+	return 1
+end
+
+def out_stage_mc(stage,parsed_op)
+
+	if (parsed_op == nil) then return 0 end
+
+	if (stage == 1 && parsed_op[0].length > 2) then
+		mcode = deepcopy( parsed_op[0] )
+		2.times{ mcode.shift }
+	else
+		mcode = parsed_op[stage]
+	end
+
+	return out_stage_mc_sub(stage,parsed_op[0][0],parsed_op[0][1],mcode)
+end
+
+def out_stage_footer(stage)
+
+	printf("\t default: MCODE_S%d = `MC_%s;\n", stage-1, (stage>1) ? "HALT" : "TRAP" )
+	printf("\tendcase\n")
+	printf("end\n")
+	printf("endfunction\n\n");
+end
+
+def generate_stage_mcode(stage)
+
+	separator = "//-----------------------------------------------------------------------------------------\n"
+	flg = 1
+
+	out_stage_header(stage)
+	for op in 0x00..0xFF do
+		if (op % 16 == 0 && flg != 0) then
+			printf(separator)
+			flg = 0
+		end
+		flg |= out_stage_mc(stage,$parsed[op])
+	end
+	if (flg != 0) then printf(separator) end
+	out_stage_footer(stage)
+end
+
+def generate_mcode
+	stages = get_maxstage
+	for stage in 1..stages do generate_stage_mcode(stage) end
+	printf("\n")
+end
+
+
+def doit
+	parser("mcode.txt")
+	generate_mcode
+end
+
+doit

@@ -1,0 +1,1028 @@
+%
+/***************************************************************************
+       This file is part of "HD63701V0 Compatible Processor Core".
+      ( DON'T ADD TO PROJECT, Because this file is include file. )
+****************************************************************************/
+`define MC_TRAP  {`mcINT,   `vaTRP  ,`mcrn,`mcpI,`amPC,`pcI}
+`define MC_HALT  {`mcNOP,`mcrn,`mcrn,`mcrn,`mcpH,`amPC,`pcN}
+
+`define MC_NEXTI {`mcNOP,`mcrn,`mcrn,`mcrn,`mcp0,`amPC,`pcN}
+`define MC_NEXTP {`mcNOP,`mcrn,`mcrn,`mcrn,`mcpN,`amPC,`pcI}
+
+`define MC_LDBRO {`mcLDN,`mcrM,`mcrn,`mcrT,`mcpN,`amPC,`pcI}	// Bxx NN
+`define MC_LDIXO {`mcLDN,`mcrM,`mcrn,`mcrT,`mcpN,`amPC,`pcI}	// ($NN+X)
+`define MC_LDIXM {`mcLDN,`mcrM,`mcrn,`mcrE,`mcpN,`amXT,`pcN}	// ($nn+X) => rE
+
+`define MC_LDEXH {`mcLDN,`mcrN,`mcrn,`mcrE,`mcpN,`amPC,`pcI}	// ($NNnn)
+`define MC_LDEXL {`mcLOR,`mcrM,`mcrE,`mcrE,`mcpN,`amPC,`pcI}	// ($nnNN)
+`define MC_LDEXM {`mcLDN,`mcrM,`mcrn,`mcrT,`mcpN,`amE0,`pcN}	// ($nnnn) => rT
+%
+#----------------------------------------------------------------------------------
+#$00 (undef)
+$01 NOP		NOP nnn K PC I
+#$02 (undef)
+#$03 (undef)
+$04 LSRD	LSR DnD K PC I
+$05 ASLD	ASL DnD K PC I
+$06 TAP		LDN AnC K PC I
+$07 TPA		LDN CnA K PC I
+$08 INX		INC XnX K PC I
+$09 DEX		DEC XnX K PC I
+$0A CLV		"{`mcCCB,  ~`bfV    ,`mcrC,`mcpK,`amPC,`pcI}"
+$0B SEV		"{`mcSCB,   `bfV    ,`mcrC,`mcpK,`amPC,`pcI}"
+$0C CLC		"{`mcCCB,  ~`bfC    ,`mcrC,`mcpK,`amPC,`pcI}"
+$0D SEC		"{`mcSCB,   `bfC    ,`mcrC,`mcpK,`amPC,`pcI}"
+$0E CLI		"{`mcCCB,  ~`bfI    ,`mcrC,`mcpK,`amPC,`pcI}"
+$0F SEI		"{`mcSCB,   `bfI    ,`mcrC,`mcpK,`amPC,`pcI}"
+#----------------------------------------------------------------------------------
+$10 SBA		SUB ABA K PC I
+$11 CBA		SUB ABn K PC I
+$12 (undoc1)
+		LDN MnT N S1 I
+		ADD XTX 0 PC N
+$13 (undoc2)
+		LDN MnT N S1 I
+		ADD XTX 0 PC N
+#$14 (undef)
+#$15 (undef)
+$16 TAB		LDR AnB K PC I
+$17 TBA		LDR BnA K PC I
+$18 XGDX
+		XTD nnn N PC I
+		LDN TnD 0 PC N
+
+$19 DAA		DAA AnA 0 PC I
+$1A SLP		NOP nnn S PC I
+$1B ABA		ADD ABA K PC I
+#$1C (undef)
+#$1D (undef)
+#$1E (undef)
+$1F (DBGHLT)	"`MC_HALT"
+#----------------------------------------------------------------------------------
+$20 BRA
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfRA   ,`mcrn,`mcp0,`amPC,`pcN}"
+$21 BRN
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfRN   ,`mcrn,`mcp0,`amPC,`pcN}"
+$22 BHI
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfHI   ,`mcrn,`mcp0,`amPC,`pcN}"
+$23 BLS
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfLS   ,`mcrn,`mcp0,`amPC,`pcN}"
+$24 BCC
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfCC   ,`mcrn,`mcp0,`amPC,`pcN}"
+$25 BCS
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfCS   ,`mcrn,`mcp0,`amPC,`pcN}"
+$26 BNE
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfNE   ,`mcrn,`mcp0,`amPC,`pcN}"
+$27 BEQ
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfEQ   ,`mcrn,`mcp0,`amPC,`pcN}"
+$28 BVC
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfVC   ,`mcrn,`mcp0,`amPC,`pcN}"
+$29 BVS
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfVS   ,`mcrn,`mcp0,`amPC,`pcN}"
+$2A BPL
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfPL   ,`mcrn,`mcp0,`amPC,`pcN}"
+$2B BMI
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfMI   ,`mcrn,`mcp0,`amPC,`pcN}"
+$2C BGE
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfGE   ,`mcrn,`mcp0,`amPC,`pcN}"
+$2D BLT
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfLT   ,`mcrn,`mcp0,`amPC,`pcN}"
+$2E BGT
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfGT   ,`mcrn,`mcp0,`amPC,`pcN}"
+$2F BLE
+		"`MC_NEXTP"
+		"`MC_LDBRO"
+		"{`mcAPC,   `bfLE   ,`mcrn,`mcp0,`amPC,`pcN}"
+#----------------------------------------------------------------------------------
+$30 TSX		INC SnX K PC I
+$31 INS		INC SnS K PC I
+$32 PULA
+		PUL MnA N S1 I
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$33 PULB
+		PUL MnB N S1 I
+		NOP nnn N PC N
+		"`MC_NEXTI"
+
+$34 DES		DEC SnS K PC I
+$35 TXS		DEC XnS K PC I
+$36 PSHA
+		PSH AnM N SP I
+		NOP nnn N PC N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$37 PSHB
+		PSH BnM N SP I
+		NOP nnn N PC N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$38 PULX
+		INC SnS N PC I
+		LDN NnX N SP N
+		LOR XMX N S1 N
+		INC SnS 0 PC N
+$39 RTS
+		NOP nnn N PC N
+		INC SnS N PC N
+		LDN NnP N SP N
+		LOR PMP N S1 N
+		INC SnS 0 PC N
+
+$3A ABX		ADD XBX K PC I
+$3B RTI
+		PUL MnT N S1 N
+		PUL MnB N S1 N
+		PUL MnA N S1 N
+		PUL NnX N S1 N
+		LOR MXX N S1 N
+		INC SnS N S1 N
+		PUL NnP N S1 N
+		LOR MPP N S1 N
+		INC SnS N PC N
+		LDN TnC 0 PC N
+$3C PSHX
+		DEC SnS N PC I
+		LDN XnM N S1 N
+		LDN XnN N SP N
+		DEC SnS N PC N
+		NOP nnn 0 PC N
+$3D MUL	
+		NOP nnn N PC N
+		NOP nnn N PC N
+		NOP nnn N PC N
+		NOP nnn N PC N
+		NOP nnn N PC N
+		NOP nnn N PC N
+		MUL ABD 0 PC I
+
+$3E WAI		"{`mcINT,   `vaWAI  ,`mcrn,`mcpI,`amPC,`pcI}"
+$3F SWI		"{`mcINT,   `vaSWI  ,`mcrn,`mcpI,`amPC,`pcI}"
+#----------------------------------------------------------------------------------
+$40 NEGA	NEG AnA K PC I
+#$41 (undef)
+#$42 (undef)
+$43 COMA	NOT AnA K PC I
+$44 LSRA	LSR AnA K PC I
+#$45 (undef)
+$46 RORA	ROR AnA K PC I
+$47 ASRA	ASR AnA K PC I
+$48 ASLA	ASL AnA K PC I
+$49 ROLA	ROL AnA K PC I
+$4A DECA	DEC AnA K PC I
+#$4B (undef)
+$4C INCA	INC AnA K PC I
+$4D TSTA	TST Ann K PC I
+#$4E (undef)
+$4F CLRA	LDR nnA K PC I
+#----------------------------------------------------------------------------------
+$50 NEGB	NEG BnB K PC I
+#$51 (undef)
+#$52 (undef)
+$53 COMB	NOT BnB K PC I
+$54 LSRB	LSR BnB K PC I
+#$55 (undef)
+$56 RORB	ROR BnB K PC I
+$57 ASRB	ASR BnB K PC I
+$58 ASLB	ASL BnB K PC I
+$59 ROLB	ROL BnB K PC I
+$5A DECB	DEC BnB K PC I
+#$5B (undef)
+$5C INCB	INC BnB K PC I
+$5D TSTB	TST Bnn K PC I
+#$5E (undef)
+$5F CLRB	LDR nnB K PC I
+#----------------------------------------------------------------------------------
+$60 NEG($nn+X)
+		"`MC_NEXTP"
+		"`MC_LDIXO"
+		"`MC_LDIXM"
+		NEG EnM N XT N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$61 AIM#,($nn+X) 
+		"`MC_NEXTP"
+		LDN MnE N PC I
+		"`MC_LDIXO"
+		AND MEE N XT N
+		LDN EnM N XT N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$62 OIM#,($nn+X) 
+		"`MC_NEXTP"
+		LDN MnE N PC I
+		"`MC_LDIXO"
+		LOR MEE N XT N
+		LDN EnM N XT N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$63 COM($nn+X)
+		"`MC_NEXTP"
+		"`MC_LDIXO"
+		"`MC_LDIXM"
+		NOT EnM N XT N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$64 LSR($nn+X)
+		"`MC_NEXTP"
+		"`MC_LDIXO"
+		"`MC_LDIXM"
+		LSR EnM N XT N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$65 EIM#,($nn+X) 
+		"`MC_NEXTP"
+		LDN MnE N PC I
+		"`MC_LDIXO"
+		EOR MEE N XT N
+		LDN EnM N XT N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$66 ROR($nn+X)
+		"`MC_NEXTP"
+		"`MC_LDIXO"
+		"`MC_LDIXM"
+		ROR EnM N XT N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$67 ASR($nn+X)
+		"`MC_NEXTP"
+		"`MC_LDIXO"
+		"`MC_LDIXM"
+		ASR EnM N XT N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$68 ASL($nn+X)
+		"`MC_NEXTP"
+		"`MC_LDIXO"
+		"`MC_LDIXM"
+		ASL EnM N XT N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$69 ROL($nn+X)
+		"`MC_NEXTP"
+		"`MC_LDIXO"
+		"`MC_LDIXM"
+		ROL EnM N XT N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$6A DEC($nn+X)
+		"`MC_NEXTP"
+		"`MC_LDIXO"
+		"`MC_LDIXM"
+		DEC EnM N XT N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$6B TIM#,($nn+X)
+		"`MC_NEXTP"
+		LDN MnE N PC I
+		"`MC_LDIXO"
+		AND MEn N XT N
+		"`MC_NEXTI"
+$6C INC($nn+X)
+		"`MC_NEXTP"
+		"`MC_LDIXO"
+		"`MC_LDIXM"
+		INC EnM N XT N
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$6D TST($nn+X)
+		LDN MnT N P1 I
+		TST Mnn N XT I
+		NOP nnn N PC N
+		"`MC_NEXTI"
+$6E JMP.$nn+X
+		"`MC_NEXTP"
+		"`MC_LDIXO"
+		ADD XTP 0 PC N
+$6F CLR($nn+X)
+		"`MC_NEXTP"
+		"`MC_LDIXO"
+		NOP nnn N XT N
+		LDN nnM N XT N
+
+		"`MC_NEXTI"
+#----------------------------------------------------------------------------------
+$70 NEG($nnnn)
+		"`MC_NEXTP"
+		"`MC_LDEXH"
+		"`MC_LDEXL"
+		"`MC_LDEXM"
+		NEG TnM N E0 N
+		"`MC_NEXTI"
+$71 AIM#,($nn)
+		LDN MnT N P1 I
+		LDN MnE N P1 I
+		AND TMT N E0 I
+		LDN TnM N E0 N
+		"`MC_NEXTI"
+$72 OIM#,($nn)
+		LDN MnT N P1 I
+		LDN MnE N P1 I
+		LOR TMT N E0 I
+		LDN TnM N E0 N
+		"`MC_NEXTI"
+$73 COM($nnnn)
+		"`MC_NEXTP"
+		"`MC_LDEXH"
+		"`MC_LDEXL"
+		"`MC_LDEXM"
+		NOT TnM N E0 N
+		"`MC_NEXTI"
+$74 LSR($nnnn)
+		"`MC_NEXTP"
+		"`MC_LDEXH"
+		"`MC_LDEXL"
+		"`MC_LDEXM"
+		LSR TnM N E0 N
+		"`MC_NEXTI"
+$75 EIM#,($nnnn)
+		LDN MnT N P1 I
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		EOR TMT N E0 I
+		LDN TnM N E0 N
+		"`MC_NEXTI"
+$76 ROR($nnnn)
+		"`MC_NEXTP"
+		"`MC_LDEXH"
+		"`MC_LDEXL"
+		"`MC_LDEXM"
+		ROR TnM N E0 N
+		"`MC_NEXTI"
+$77 ASR($nnnn)
+		"`MC_NEXTP"
+		"`MC_LDEXH"
+		"`MC_LDEXL"
+		"`MC_LDEXM"
+		ASR TnM N E0 N
+		"`MC_NEXTI"
+$78 ASL($nnnn)
+		"`MC_NEXTP"
+		"`MC_LDEXH"
+		"`MC_LDEXL"
+		"`MC_LDEXM"
+		ASL TnM N E0 N
+		"`MC_NEXTI"
+$79 ROL($nnnn)
+		"`MC_NEXTP"
+		"`MC_LDEXH"
+		"`MC_LDEXL"
+		"`MC_LDEXM"
+		ROL TnM N E0 N
+		"`MC_NEXTI"
+$7A DEC($nnnn)
+		"`MC_NEXTP"
+		"`MC_LDEXH"
+		"`MC_LDEXL"
+		"`MC_LDEXM"
+		DEC TnM N E0 N
+		"`MC_NEXTI"
+$7B TIM#,($nn)
+		LDN MnT N P1 I
+		LDN MnE N P1 I
+		AND TMn N E0 I
+		"`MC_NEXTI"
+$7C INC($nnnn)
+		"`MC_NEXTP"
+		"`MC_LDEXH"
+		"`MC_LDEXL"
+		"`MC_LDEXM"
+		INC TnM N E0 N
+		"`MC_NEXTI"
+$7D TST($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		TST Mnn N E0 I
+		"`MC_NEXTI"
+$7E JMP.$nnnn
+		"`MC_NEXTP"
+		"`MC_LDEXH"
+		LOR MEP 0 PC N
+$7F CLR($nnnn)
+		"`MC_NEXTP"
+		"`MC_LDEXH"
+		"`MC_LDEXL"
+		LDR nnM N E0 N
+		"`MC_NEXTI"
+#----------------------------------------------------------------------------------
+$80 SUBA#
+		NOP nnn N PC I
+		SUB AMA 0 PC I
+$81 CMPA#
+		NOP nnn N PC I
+		SUB AMn 0 PC I
+$82 SBCA#
+		NOP nnn N PC I
+		SBC AMA 0 PC I
+$83 SUBD#
+		LDN MnU N P1 I
+		LDN MnV N P1 I
+		SUB DTD 0 PC I
+$84 ANDA#
+		NOP nnn N PC I
+		AND AMA 0 PC I
+$85 BITA#
+		NOP nnn N PC I
+		AND AMn 0 PC I
+$86 LDA#
+		NOP nnn N PC I
+		LDR MnA 0 PC I
+#$87 (undef)
+$88 EORA#
+		NOP nnn N PC I
+		EOR AMA 0 PC I
+$89 ADCA#
+		NOP nnn N PC I
+		ADC AMA 0 PC I
+$8A ORA#
+		NOP nnn N PC I
+		LOR AMA 0 PC I
+$8B ADDA#
+		NOP nnn N PC I
+		ADD AMA 0 PC I
+$8C CMPX#
+		LDN MnU N P1 I
+		LDN MnV N P1 I
+		SUB XTn 0 PC I
+$8D BSR
+		LDN MnT N P1 I
+		NOP nnn N PC I
+		PSH PnM N SP N
+
+		PSH PnN N SP N
+		"{`mcAPC,   `bfRA   ,`mcrn,`mcp0,`amPC,`pcN}"
+$8E LDS#
+		LDN MnU N P1 I
+		LDN MnV N P1 I
+		LDR TnS 0 PC I
+#$8F (undef)
+#----------------------------------------------------------------------------------
+$90 SUBA($nn)
+		LDN MnE N P1 I
+		SUB AMA N E0 I
+		NOP nnn 0 PC N
+$91 CMPA($nn)
+		LDN MnE N P1 I
+		SUB AMn N E0 I
+		NOP nnn 0 PC N
+$92 SBCA($nn)
+		LDN MnE N P1 I
+		SBC AMA N E0 I
+		NOP nnn 0 PC N
+$93 SUBD($nn)
+		LDN MnE N P1 I
+		LDN MnU N E0 I
+		LDN MnV N E1 N
+		SUB DTD 0 PC N
+$94 ANDA($nn)
+		LDN MnE N P1 I
+		AND AMA N E0 I
+		NOP nnn 0 PC N
+$95 BITA($nn)
+		LDN MnE N P1 I
+		AND AMn N E0 I
+		NOP nnn 0 PC N
+$96 LDA($nn)
+		LDN MnE N P1 I
+		LDR MnA N E0 I
+		NOP nnn 0 PC N
+$97 STA($nn)
+		LDN MnE N P1 I
+		LDR AnM N E0 I
+		NOP nnn 0 PC N
+$98 EORA($nn)
+		LDN MnE N P1 I
+		EOR AMA N E0 I
+		NOP nnn 0 PC N
+$99 ADCA($nn)
+		LDN MnE N P1 I
+		ADC AMA N E0 I
+		NOP nnn 0 PC N
+$9A ORA($nn)
+		LDN MnE N P1 I
+		LOR AMA N E0 I
+		NOP nnn 0 PC N
+$9B ADDA($nn)
+		LDN MnE N P1 I
+		ADD AMA N E0 I
+		NOP nnn 0 PC N
+$9C CMPX($nn)
+		LDN MnE N P1 I
+		LDN NnT N E0 I
+		LOR MTT N E1 N
+		SUB XTn 0 PC N
+$9D JSR($nn)
+		NOP nnn N PC I
+		LDN MnE N PC I
+		PSH PnM N SP N
+		PSH PnN N SP N
+		LDN EnP 0 PC N
+$9E LDS($nn)
+		LDN MnE N P1 I
+		LDN MnU N E0 I
+		LDN MnV N E1 N
+		LDR TnS 0 PC N
+$9F STS($nn)
+		LDN MnE N P1 I
+		LDN SnN N E0 I
+		LDN SnM N E1 N
+		LDR SnS 0 PC N
+#----------------------------------------------------------------------------------
+$A0 SUBA($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		SUB AEA 0 PC N
+$A1 CMPA($nn+X)	
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		SUB AEn 0 PC N
+$A2 SBCA($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		SBC AEn 0 PC N
+$A3 SUBD($nn+X)
+		LDN MnT N P1 I
+		LDN NnE N XT I
+		INC TnT N XT N
+		LOR MEE N XT N
+		SUB DED 0 PC N
+$A4 ANDA($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		AND AEA 0 PC N
+$A5 BITA($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		AND AEn 0 PC N
+$A6 LDA($nn+X)
+		LDN MnT N P1 I
+		LDR MnA N XT I
+		NOP nnn N PC N
+		NOP nnn 0 PC N
+$A7 STA($nn+X)
+		LDN MnT N P1 I
+		LDR AnM N XT I
+		NOP nnn N PC N
+		NOP nnn 0 PC N
+$A8 EORA($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		EOR AEA 0 PC N
+$A9 ADCA($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		ADC AEA 0 PC N
+$AA ORA($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		LOR AEA 0 PC N
+$AB ADDA($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		ADD AEA 0 PC N
+$AC CMPX($nn+X)
+		LDN MnT N P1 I
+		LDN NnE N XT I
+		INC TnT N XT N
+		LOR MEE N XT N
+		SUB XEn 0 PC N
+$AD JSR.$nn+X
+		LDN MnT N P1 I
+		NOP nnn N PC I
+		PSH PnM N SP N
+
+		PSH PnN N SP N
+		ADD XTP 0 PC N
+$AE LDS($nn+X)
+		LDN MnT N P1 I
+		LDN NnE N XT I
+		INC TnT N XT N
+		LOR MEE N XT N
+		LDR EnS 0 PC N
+$AF STS($nn+X)
+		LDN MnT N P1 I
+		LDN SnN N XT I
+		INC TnT N XT N
+		LDN SnM N XT N
+		LDR SnS 0 PC N
+#----------------------------------------------------------------------------------
+$B0 SUBA($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		SUB AMA N E0 I
+		NOP nnn 0 PC N
+$B1 CMPA($nnnn)	
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		SUB AMn N E0 I
+		NOP nnn 0 PC N
+$B2 SBCA($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		SBC AMn N E0 I
+		NOP nnn 0 PC N
+$B3 SUBD($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDN NnT N E0 I
+		LOR MTT N E1 N
+		SUB DTD 0 PC N
+$B4 ANDA($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		AND AMA N E0 I
+		NOP nnn 0 PC N
+$B5 BITA($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		AND AMn N E0 I
+		NOP nnn 0 PC N
+$B6 LDA($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDR MnA N E0 I
+		NOP nnn 0 PC N
+$B7 STA($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDR AnM N E0 I
+		NOP nnn 0 PC N
+$B8 EORA($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		EOR AMA N E0 I
+		NOP nnn 0 PC N
+$B9 ADCA($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		ADC AMA N E0 I
+		NOP nnn 0 PC N
+$BA ORA($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LOR AMA N E0 I
+		NOP nnn 0 PC N
+$BB ADDA($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		ADD AMA N E0 I
+		NOP nnn 0 PC N
+$BC CMPX($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDN NnT N E0 I
+		LOR MTT N E1 N
+		SUB XTn 0 PC N
+$BD JSR.$nnnn
+		NOP nnn N PC I
+		LDN NnE N PC I
+		LOR MEE N PC I
+		PSH PnM N SP N
+		PSH PnN N SP N
+		LDN EnP 0 PC N
+$BE LDS($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDN MnU N E0 I
+		LDN MnV N E1 N
+		LDR TnS 0 PC N
+$BF STS($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDN SnN N E0 I
+		LDN SnM N E1 N
+		LDR SnS 0 PC N
+#----------------------------------------------------------------------------------
+$C0 SUBB#
+		NOP nnn N PC I
+		SUB BMB 0 PC I
+$C1 CMPB#
+		NOP nnn N PC I
+		SUB BMn 0 PC I
+$C2 SBCB#
+		NOP nnn N PC I
+		SBC BMB 0 PC I
+$C3 ADDD#
+		LDN MnU N P1 I
+		LDN MnV N P1 I
+		ADD DTD 0 PC I
+$C4 ANDB#
+		NOP nnn N PC I
+		AND BMB 0 PC I
+$C5 BITB#
+		NOP nnn N PC I
+		AND BMn 0 PC I
+$C6 LDB#
+		NOP nnn N PC I
+		LDR MnB 0 PC I
+
+#$C7 (undef)
+
+$C8 EORB#
+		NOP nnn N PC I
+		EOR BMB 0 PC I
+$C9 ADCB#
+		NOP nnn N PC I
+		ADC BMB 0 PC I
+$CA ORB#
+		NOP nnn N PC I
+		LOR BMB 0 PC I
+$CB ADDB#
+		NOP nnn N PC I
+		ADD BMB 0 PC I
+$CC LDD#
+		LDN MnU N P1 I
+		LDN MnV N P1 I
+		LDR TnD 0 PC I
+
+#$CD (undef)
+
+$CE LDX#
+		LDN MnU N P1 I
+		LDN MnV N P1 I
+		LDR TnX 0 PC I
+
+#$CF (undef)
+#----------------------------------------------------------------------------------
+$D0 SUBB($nn)
+		LDN MnE N P1 I
+		SUB BMB N E0 I
+		NOP nnn 0 PC N
+$D1 CMPB($nn)
+		LDN MnE N P1 I
+		SUB BMn N E0 I
+		NOP nnn 0 PC N
+$D2 SBCB($nn)
+		LDN MnE N P1 I
+		SBC BMB N E0 I
+		NOP nnn 0 PC N
+$D3 ADDD($nn)
+		LDN MnE N P1 I
+		LDN MnU N E0 I
+		LDN MnV N E1 N
+		ADD DTD 0 PC N
+$D4 ANDB($nn)
+		LDN MnE N P1 I
+		AND BMB N E0 I
+		NOP nnn 0 PC N
+$D5 BITB($nn)
+		LDN MnE N P1 I
+		AND BMn N E0 I
+		NOP nnn 0 PC N
+$D6 LDB($nn)
+		LDN MnE N P1 I
+		LDR MnB N E0 I
+		NOP nnn 0 PC N
+$D7 STB($nn)
+		LDN MnE N P1 I
+		LDR BnM N E0 I
+		NOP nnn 0 PC N
+$D8 EORB($nn)
+		LDN MnE N P1 I
+		EOR BMB N E0 I
+		NOP nnn 0 PC N
+$D9 ADCB($nn)
+		LDN MnE N P1 I
+		ADC BMB N E0 I
+		NOP nnn 0 PC N
+$DA ORB($nn)
+		LDN MnE N P1 I
+		LOR BMB N E0 I
+		NOP nnn 0 PC N
+$DB ADDB($nn)
+		LDN MnE N P1 I
+		ADD BMB N E0 I
+		NOP nnn 0 PC N
+$DC LDD($nn)
+		LDN MnE N P1 I
+		LDN NnD N E0 I
+		LOR MDD N E1 N
+		LDR DnD 0 PC N
+$DD STD($nn)
+		LDN MnE N P1 I
+		LDN DnN N E0 I
+		LDN DnM N E1 N
+		LDR DnD 0 PC N
+$DE LDX($nn)
+		LDN MnE N P1 I
+		LDN NnX N E0 I
+		LOR MXX N E1 N
+		LDR XnX 0 PC N
+$DF STX($nn)
+		LDN MnE N P1 I
+		LDN XnN N E0 I
+		LDN XnM N E1 N
+		LDR XnX 0 PC N
+#----------------------------------------------------------------------------------
+$E0 SUBB($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		SUB BEB 0 PC N
+$E1 CMPB($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		SUB BEn 0 PC N
+$E2 SBCB($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		SBC BEB 0 PC N
+$E3 ADDD($nn+X)
+		LDN MnT N P1 I
+		LDN NnE N XT I
+		INC TnT N XT N
+		LOR MEE N XT N
+		ADD DED 0 PC N
+$E4 ANDB($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		AND BEB 0 PC N
+$E5 BITB($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		AND BEn 0 PC N
+$E6 LDB($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		LDR EnB 0 PC N
+$E7 STB($nn+X)
+		LDN MnT N P1 I
+		LDN BnM N XT I
+		NOP nnn N PC N
+		NOP nnn 0 PC N
+$E8 EORB($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		EOR BEB 0 PC N
+$E9 ADCB($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		ADC BEB 0 PC N
+$EA ORB($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		LOR BEB 0 PC N
+$EB ADDB($nn+X)
+		LDN MnT N P1 I
+		LDN MnE N XT I
+		NOP nnn N PC N
+		ADD BEB 0 PC N
+$EC LDD($nn+X)
+		LDN MnT N P1 I
+		LDN NnE N XT I
+		INC TnT N XT N
+		LOR MEE N XT N
+		LDR EnD 0 PC N
+$ED STD($nn+X)
+		LDN MnT N P1 I
+		LDN DnN N XT I
+		INC TnT N XT N
+		LDN DnM N XT N
+		LDR DnD 0 PC N
+$EE LDX($nn+X)
+		LDN MnT N P1 I
+		LDN NnE N XT I
+		INC TnT N XT N
+		LOR MEE N XT N
+		LDN EnX 0 PC N
+$EF STX($nn+X)
+		LDN MnT N P1 I
+		LDN XnN N XT I
+		INC TnT N XT N
+		LDN XnM N XT N
+		LDR XnX 0 PC N
+#----------------------------------------------------------------------------------
+$F0 SUBB($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		SUB BMB N E0 I
+		NOP nnn 0 PC N
+$F1 CMPB($nnnn)	
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		SUB BMn N E0 I
+		NOP nnn 0 PC N
+$F2 SBCB($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		SBC BMn N E0 I
+		NOP nnn 0 PC N
+$F3 ADDD($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDN NnT N E0 I
+		LOR MTT N E1 N
+		ADD DTD 0 PC N
+$F4 ANDB($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		AND BMB N E0 I
+		NOP nnn 0 PC N
+$F5 BITB($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		AND BMn N E0 I
+		NOP nnn 0 PC N
+$F6 LDB($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDR MnB N E0 I
+		NOP nnn 0 PC N
+$F7 STB($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDR BnM N E0 I
+		NOP nnn 0 PC N
+$F8 EORB($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		EOR BMB N E0 I
+		NOP nnn 0 PC N
+$F9 ADCB($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		ADC BMB N E0 I
+		NOP nnn 0 PC N
+$FA ORB($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LOR BMB N E0 I
+		NOP nnn 0 PC N
+$FB ADDB($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		ADD BMB N E0 I
+		NOP nnn 0 PC N
+$FC LDD($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDN MnU N E0 I
+		LDN MnV N E1 N
+		LDR TnD 0 PC N
+$FD STD($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDN DnN N E0 I
+		LDN DnM N E1 N
+		LDR DnD 0 PC N
+$FE LDX($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDN MnU N E0 I
+		LDN MnV N E1 N
+		LDR TnX 0 PC N
+$FF STX($nnnn)
+		LDN NnE N P1 I
+		LOR MEE N P1 I
+		LDN XnN N E0 I
+		LDN XnM N E1 N
+		LDR XnX 0 PC N
+#----------------------------------------------------------------------------------
